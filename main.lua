@@ -1,13 +1,17 @@
+WIDTH = love.graphics.getWidth()
+HEIGHT = love.graphics.getHeight()
+
 function love.load()
     newGame()
-    ball = 5
+    ballsize = 5
 
-    paddleWidth = 10
+	-- dimensions from paddles
+    paddleWidth = 15
     paddleHeight = 80
-    paddle1X = 30
-    paddle1Y = love.graphics.getHeight() / 2 - paddleHeight
-    paddle2X = love.graphics.getWidth() - paddle1X - paddleWidth
-    paddle2Y = love.graphics.getHeight() / 2 - paddleHeight
+    paddle1X = 0
+    paddle1Y = HEIGHT / 2 - paddleHeight
+    paddle2X = WIDTH - paddle1X - paddleWidth
+    paddle2Y = HEIGHT/ 2 - paddleHeight
     paddleSpeed = 400
 
     maxScore = 6
@@ -35,7 +39,7 @@ function love.update(dt)
 end
 
 function love.draw()
-	love.graphics.setColor(176, 048, 096, 1)
+	love.graphics.setColor(176, 048, 096)
 	if currentState == 'startScreen' then
 		startScreen()
 	    player1Score = 0
@@ -65,8 +69,8 @@ function love.keypressed(key)
 end
 
 function newGame()
-    ballX = love.graphics.getWidth() / 2
-    ballY = love.graphics.getHeight() / 2
+    ballX = WIDTH / 2
+    ballY = HEIGHT / 2
 	
 	ballSpeed = 650
 	ballDirection = math.rad(math.random(200, 395))
@@ -80,7 +84,7 @@ function play(dt)
     ballY = ballY + ballSpeedY * dt
 
 	-- give the point, when paddle doesnt hit the ball (left & right)
-    if ballX + ball < 0 then
+    if ballX + ballsize < 0 then
         newGame()
         player2Score = player2Score + 1
         sounds['score']:play()
@@ -92,7 +96,7 @@ function play(dt)
         end
     end
 
-    if ballX > love.graphics.getWidth() then
+    if ballX > WIDTH then
         newGame()
         player1Score = player1Score + 1
         sounds['score']:play()
@@ -111,8 +115,8 @@ function play(dt)
         sounds['wall_hit']:play()
     end
 
-    if ballY > love.graphics.getHeight() then
-        ballY = love.graphics.getHeight()
+    if ballY > HEIGHT then
+        ballY = HEIGHT
         ballSpeedY = -ballSpeedY
         sounds['wall_hit']:play()
     end
@@ -135,8 +139,9 @@ function play(dt)
 end
 
 function drawGraphics()
-    love.graphics.circle('fill', ballX, ballY, ball)
+    love.graphics.circle('fill', ballX, ballY, ballsize)
 
+	love.graphics.setColor(199, 21, 133)
     love.graphics.rectangle('fill', paddle1X, paddle1Y, paddleWidth, paddleHeight)
     love.graphics.rectangle('fill', paddle2X, paddle2Y, paddleWidth, paddleHeight)
 
@@ -146,6 +151,7 @@ end
 
 
 function startScreen()
+	love.graphics.setColor(255,182,193)
 	love.graphics.print('Welcome to Pong!\nPress Space to Start!\nPress Escape to quit\n\nPlayer with 6 points wins!', 3, 3)
 end
 
@@ -163,9 +169,9 @@ end
 
 function checkCollision()
     if  ballX < paddle1X + paddleWidth and
-        ballX + ball > paddle1X and
+        ballX + ballsize > paddle1X and
         ballY < paddle1Y + paddleHeight and
-        ballY + ball > paddle1Y
+        ballY + ballsize > paddle1Y
     then
         ballX = paddle1X + paddleWidth
         ballSpeedX = -ballSpeedX
@@ -173,11 +179,11 @@ function checkCollision()
     end
 
     if  ballX < paddle2X + paddleWidth and
-        ballX + ball > paddle2X and
+        ballX + ballsize > paddle2X and
         ballY < paddle2Y + paddleHeight and
-        ballY + ball > paddle2Y
+        ballY + ballsize > paddle2Y
     then
-        ballX = paddle2X - ball
+        ballX = paddle2X - ballsize
         ballSpeedX = -ballSpeedX
         sounds['paddle_hit']:play()
     end
